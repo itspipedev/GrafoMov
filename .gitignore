@@ -1,12 +1,10 @@
-# Data
-data/raw/*
+# Data procesada y grafos (se regeneran)
 data/processed/*
 data/graphs/*
-!data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/graphs/.gitkeep
 
-# Models
+# Models (pesados, se regeneran)
 models/*
 !models/.gitkeep
 
