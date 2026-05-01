@@ -45,19 +45,19 @@ export default function MapPage() {
       {/* Controls */}
       <div className="absolute top-4 left-4 z-[1000] flex gap-2">
         <button onClick={() => setShowTM(!showTM)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${showTM ? "bg-red-600 text-white" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"}`}>
+          className={`btn-toggle ${showTM ? "active bg-red-600/90 text-white" : "bg-slate-800/90 text-slate-400 hover:bg-slate-700"}`}>
           🔴 Transmilenio
         </button>
         <button onClick={() => setShowSITP(!showSITP)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${showSITP ? "bg-blue-600 text-white" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"}`}>
+          className={`btn-toggle ${showSITP ? "active bg-blue-600/90 text-white" : "bg-slate-800/90 text-slate-400 hover:bg-slate-700"}`}>
           🔵 SITP
         </button>
       </div>
 
       {/* Nearby panel */}
       {nearby.length > 0 && (
-        <div className="absolute top-4 right-4 z-[1000] bg-zinc-900/95 backdrop-blur rounded-xl p-4 w-80 max-h-96 overflow-y-auto border border-zinc-800">
-          <h3 className="text-sm font-bold mb-2">📍 Paraderos cercanos</h3>
+        <div className="map-panel absolute top-4 right-4 z-[1000] p-4 w-80 max-h-96 overflow-y-auto animate-fadeIn">
+          <h3 className="text-sm font-bold mb-3">📍 Paraderos cercanos</h3>
           {nearby.map((item: any, i: number) => (
             <div key={i} className="flex justify-between items-center py-1.5 border-b border-zinc-800 last:border-0">
               <div>

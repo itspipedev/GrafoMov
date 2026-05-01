@@ -66,7 +66,7 @@ export default function ChatPage() {
               </div>
             )}
             <div className={`max-w-[70%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
-              msg.role === "user" ? "bg-emerald-600" : "bg-zinc-800 text-zinc-200"
+              msg.role === "user" ? "chat-user" : "chat-assistant text-slate-200"
             }`}>{msg.content}</div>
             {msg.role === "user" && (
               <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center shrink-0">
