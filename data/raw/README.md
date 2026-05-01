@@ -9,6 +9,7 @@ data/raw/
 ├── README.md                  ← Este archivo
 ├── transmilenio/              ← Estaciones, rutas y trazados troncales TM
 ├── sitp/                      ← Paraderos, nodos y rutas zonales SITP
+├── vehicular/                 ← Parque automotor, tráfico peajes, pesaje carga
 ├── siniestralidad/
 │   ├── datos_gov_co/          ← Datos originales de datos.gov.co
 │   └── fuentes_alternativas/  ← Datos de otras fuentes (ver nota abajo)
