@@ -37,3 +37,13 @@ def get_siniestralidad(limit=20):
 
 def get_worst_accessibility(limit=20):
     return requests.get(f"{BASE_URL}/graph/accessibility/worst", params={"limit": limit}).json()
+
+
+def chat(message, session_id="default"):
+    return requests.post(f"{BASE_URL}/agent/chat", json={
+        "message": message, "session_id": session_id
+    }).json()
+
+
+def reset_chat(session_id="default"):
+    return requests.post(f"{BASE_URL}/agent/reset", params={"session_id": session_id}).json()

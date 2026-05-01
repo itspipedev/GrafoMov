@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.v1.endpoints import graph
+from app.api.v1.endpoints import graph, agent
 
 app = FastAPI(
     title=settings.app_name,
@@ -19,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(graph.router, prefix=settings.api_prefix)
+app.include_router(agent.router, prefix=settings.api_prefix)
 
 
 @app.get("/health")

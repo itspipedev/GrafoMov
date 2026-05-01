@@ -22,6 +22,7 @@ with st.sidebar:
         "Accesibilidad",
         "Nodos Centrales",
         "Métricas",
+        "💬 Chat IA",
     ])
 
     st.divider()
@@ -222,6 +223,36 @@ try:
         st.write(f"Promedio/día: {int(attrs.get('demanda_promedio_dia', 0)):,} pasajeros")
         st.write(f"Máximo/día: {int(attrs.get('demanda_max_dia', 0)):,} pasajeros")
         st.write(f"Período: {attrs.get('demanda_periodo', '')}")
+
+    elif view == "💬 Chat IA":
+        st.header("💬 Pregúntale al grafo")
+        st.caption("Habla con GrafoMov en lenguaje natural sobre el transporte de Bogotá")
+
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+
+        # Chat history
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.write(msg["content"])
+
+        # Input
+        if prompt := st.chat_input("¿Qué quieres saber sobre la movilidad de Bogotá?"):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.write(prompt)
+
+            with st.chat_message("assistant"):
+                with st.spinner("Consultando el grafo..."):
+                    result = api.chat(prompt)
+                    response = result.get("response", "Error al procesar")
+                st.write(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+        if st.sidebar.button("🗑️ Limpiar chat"):
+            st.session_state.messages = []
+            api.reset_chat()
+            st.rerun()
 
 except Exception as e:
     st.error(f"⚠️ Error conectando al backend: {e}")
