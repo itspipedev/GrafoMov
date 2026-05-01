@@ -1,0 +1,31 @@
+# Data
+data/raw/*
+data/processed/*
+data/graphs/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/graphs/.gitkeep
+
+# Models
+models/*
+!models/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Env
+.env
