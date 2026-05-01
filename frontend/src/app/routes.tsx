@@ -7,6 +7,8 @@ import { ROUTES } from "../shared/config";
 const MapPage = lazy(() => import("../modules/map/pages/MapPage"));
 const ChatPage = lazy(() => import("../modules/chat/pages/ChatPage"));
 const MetricsPage = lazy(() => import("../modules/metrics/pages/MetricsPage"));
+const SiniestralidadPage = lazy(() => import("../modules/siniestralidad/pages/SiniestralidadPage"));
+const AccessibilityPage = lazy(() => import("../modules/accessibility/pages/AccessibilityPage"));
 
 function Lazy({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Loading />}>{children}</Suspense>;
@@ -20,8 +22,8 @@ export function AppRoutes() {
         <Route path={ROUTES.MAP} element={<Lazy><MapPage /></Lazy>} />
         <Route path={ROUTES.CHAT} element={<Lazy><ChatPage /></Lazy>} />
         <Route path={ROUTES.METRICS} element={<Lazy><MetricsPage /></Lazy>} />
-        <Route path={ROUTES.SINIESTRALIDAD} element={<Lazy><MapPage /></Lazy>} />
-        <Route path={ROUTES.ACCESSIBILITY} element={<Lazy><MapPage /></Lazy>} />
+        <Route path={ROUTES.SINIESTRALIDAD} element={<Lazy><SiniestralidadPage /></Lazy>} />
+        <Route path={ROUTES.ACCESSIBILITY} element={<Lazy><AccessibilityPage /></Lazy>} />
       </Route>
     </Routes>
   );
