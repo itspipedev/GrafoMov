@@ -3,9 +3,9 @@ import { Sidebar } from "./components/Sidebar";
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
+    <div style={{ minHeight: "100vh", background: "#0f172a", color: "#e2e8f0" }}>
       <Sidebar />
-      <main className="ml-[72px]">
+      <main style={{ marginLeft: 72 }}>
         <Outlet />
       </main>
     </div>

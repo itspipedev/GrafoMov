@@ -22,82 +22,101 @@ export default function ChatPage() {
       const res = await agentApi.chat(msg);
       setMessages((p) => [...p, { role: "assistant", content: res.response }]);
     } catch {
-      setMessages((p) => [...p, { role: "assistant", content: "Error al conectar con el agente." }]);
+      setMessages((p) => [...p, { role: "assistant", content: "⚠️ Backend no disponible. Ejecuta: cd backend && uvicorn main:app --reload" }]);
     }
     setLoading(false);
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-            <Bot size={20} className="text-emerald-400" />
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Bot size={18} color="#34d399" />
           </div>
           <div>
-            <h1 className="font-bold">GrafoMov IA</h1>
-            <p className="text-xs text-zinc-400">Pregúntale sobre la movilidad de Bogotá</p>
+            <p style={{ fontWeight: 700, fontSize: 15 }}>GrafoMov IA</p>
+            <p style={{ fontSize: 11, color: "#64748b" }}>Pregúntale sobre la movilidad de Bogotá</p>
           </div>
         </div>
-        <button onClick={() => { agentApi.reset(); setMessages([]); }} className="p-2 rounded-lg hover:bg-zinc-800">
+        <button onClick={() => { agentApi.reset().catch(() => {}); setMessages([]); }}
+          style={{ padding: 8, borderRadius: 8, background: "transparent", border: "none", color: "#64748b", cursor: "pointer" }}>
           <RotateCcw size={16} />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-4">
+      {/* Messages */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "24px 24px" }}>
         {messages.length === 0 && (
-          <div className="text-center text-zinc-500 mt-20">
-            <Bot size={48} className="mx-auto mb-4 text-zinc-600" />
-            <p className="text-lg font-medium">¿Qué quieres saber?</p>
-            <div className="flex flex-wrap gap-2 justify-center mt-6">
+          <div style={{ textAlign: "center", color: "#475569", marginTop: 80 }}>
+            <Bot size={40} color="#334155" style={{ margin: "0 auto 16px" }} />
+            <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>¿Qué quieres saber?</p>
+            <p style={{ fontSize: 13, color: "#475569", marginBottom: 24 }}>Pregunta sobre estaciones, rutas, zonas peligrosas o accesibilidad</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
               {["¿Zonas más peligrosas?", "¿Paraderos cerca del centro?", "¿Nodo más central?"].map((q) => (
-                <button key={q} onClick={() => setInput(q)}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-zinc-700 hover:bg-zinc-800">{q}</button>
+                <button key={q} onClick={() => setInput(q)} style={{
+                  fontSize: 12, padding: "8px 16px", borderRadius: 12,
+                  border: "1px solid rgba(255,255,255,0.1)", background: "rgba(30,41,59,0.8)",
+                  color: "#94a3b8", cursor: "pointer", transition: "all 0.2s",
+                }}>{q}</button>
               ))}
             </div>
           </div>
         )}
 
         {messages.map((msg, i) => (
-          <div key={i} className={`flex gap-3 mb-4 ${msg.role === "user" ? "justify-end" : ""}`}>
+          <div key={i} style={{ display: "flex", gap: 10, marginBottom: 16, justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
             {msg.role === "assistant" && (
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                <Bot size={16} className="text-emerald-400" />
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Bot size={14} color="#34d399" />
               </div>
             )}
-            <div className={`max-w-[70%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
-              msg.role === "user" ? "chat-user" : "chat-assistant text-slate-200"
-            }`}>{msg.content}</div>
+            <div style={{
+              maxWidth: "65%", borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+              padding: "12px 16px", fontSize: 14, lineHeight: 1.5, whiteSpace: "pre-wrap",
+              background: msg.role === "user" ? "linear-gradient(135deg, #10b981, #059669)" : "linear-gradient(135deg, #1e293b, #334155)",
+              border: msg.role === "assistant" ? "1px solid rgba(255,255,255,0.06)" : "none",
+              color: msg.role === "user" ? "white" : "#cbd5e1",
+            }}>{msg.content}</div>
             {msg.role === "user" && (
-              <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center shrink-0">
-                <User size={16} />
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#334155", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <User size={14} color="#94a3b8" />
               </div>
             )}
           </div>
         ))}
 
         {loading && (
-          <div className="flex gap-3 mb-4">
-            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-              <Bot size={16} className="text-emerald-400 animate-pulse" />
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Bot size={14} color="#34d399" className="animate-pulse" />
             </div>
-            <div className="bg-zinc-800 rounded-2xl px-4 py-3 flex gap-1">
-              <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce [animation-delay:0.1s]" />
-              <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+            <div style={{ background: "#1e293b", borderRadius: 18, padding: "12px 16px", display: "flex", gap: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#475569", animation: "bounce 1s infinite" }} />
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#475569", animation: "bounce 1s infinite 0.1s" }} />
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#475569", animation: "bounce 1s infinite 0.2s" }} />
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <div className="px-6 py-4 border-t border-zinc-800">
-        <form onSubmit={(e) => { e.preventDefault(); send(); }} className="flex gap-2">
+      {/* Input */}
+      <div style={{ padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <form onSubmit={(e) => { e.preventDefault(); send(); }} style={{ display: "flex", gap: 8 }}>
           <input value={input} onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe tu pregunta..."
-            className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500" />
-          <button type="submit" disabled={loading}
-            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-xl px-4 py-3">
+            style={{
+              flex: 1, background: "#1e293b", border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 14, padding: "12px 16px", fontSize: 14, color: "#e2e8f0",
+              outline: "none",
+            }} />
+          <button type="submit" disabled={loading} style={{
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            border: "none", borderRadius: 14, padding: "12px 16px", cursor: "pointer",
+            opacity: loading ? 0.5 : 1, color: "white",
+          }}>
             <Send size={18} />
           </button>
         </form>
