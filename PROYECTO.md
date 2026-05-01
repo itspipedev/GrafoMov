@@ -212,15 +212,19 @@ GrafoMov/
 
 ## ✅ TODO
 
-- [ ] Inscribirse antes del 1 de mayo 2026 (Microsoft Forms en la página del concurso)
-- [ ] Descargar y explorar datasets clave (prioridad ⭐⭐⭐)
-- [ ] Construir grafo base con paradas + rutas de Bogotá
-- [ ] Enriquecer nodos/aristas con features (pasajeros, siniestralidad)
-- [ ] Entrenar modelo GNN para predicción de demanda
-- [ ] Implementar detección de anomalías
-- [ ] Análisis de accesibilidad (zonas mal conectadas)
-- [ ] Agente conversacional con Graph RAG
-- [ ] Dashboard / web app funcional
-- [ ] Documentación CRISP-ML
-- [ ] Crear repo público GitHub/GitLab
+- [x] Inscribirse antes del 1 de mayo 2026
+- [x] Descargar y explorar datasets clave
+- [x] Construir grafo base con paradas + rutas de Bogotá (7,444 nodos, 41,990 aristas)
+- [x] Enriquecer nodos/aristas con features (siniestralidad, centralidad, demanda)
+- [x] Entrenar modelo GNN (GAT — MSE 0.18, RMSE 0.42)
+- [x] Backend FastAPI (SOLID, 8 endpoints + agente)
+- [x] PostGIS (Docker, schema, loader, repositorio)
+- [x] Agente conversacional (LLM + Graph RAG, 6 tools, OpenAI/Ollama)
+- [x] Frontend Streamlit tipo Waze (8 vistas: mapa, nearby, rutas, peligro, accesibilidad, centralidad, métricas, chat)
+- [x] Documentación CRISP-ML
+- [x] Repo público GitHub
 - [ ] Registrar en herramientas.datos.gov.co/usos
+- [ ] Buscar datos complementarios (Waze, OSM, SIMUR) para movilidad vehicular completa
+- [ ] Mejorar siniestralidad con datos geolocalizados (si se obtiene acceso a datosabiertos.bogota.gov.co)
+- [ ] Mejorar demanda con datos post-pandemia
+- [ ] Implementar pgRouting para pathfinding en PostGIS

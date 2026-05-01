@@ -44,7 +44,17 @@ Americas, Autonorte, Calle 26, Calle 6, Calle 80, Caracas, Cr 7-10, Eje Ambienta
 | Pesaje carga | 50,000 | Transporte de carga |
 
 ## Siguiente paso
-Construir el grafo base con NetworkX:
-1. Nodos = estaciones TM + paraderos SITP (con coordenadas)
-2. Aristas TM = rutas troncales (con geometría LineString)
-3. Aristas SITP = conexiones entre paraderos usando secuencia de paradas
+~~Construir el grafo base con NetworkX~~ ✅ HECHO
+
+### Resultados del grafo construido
+
+| Versión | Nodos | Aristas | Componente principal | Grado promedio |
+|---------|-------|---------|---------------------|----------------|
+| v1 (base) | 7,856 | 786 | 3% | 0.20 |
+| v2 (secuencias) | 7,444 | 41,990 | 97.9% | 11.28 |
+| v2 enriched | 7,444 | 41,990 | 97.9% | 11.28 + features |
+
+### Modelo GNN entrenado
+- GAT (4 heads, 32 hidden)
+- MSE: 0.1809 | RMSE: 0.4253
+- Early stopping: epoch 163
