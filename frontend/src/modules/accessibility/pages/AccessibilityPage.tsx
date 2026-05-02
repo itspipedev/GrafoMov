@@ -1,98 +1,61 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
-import { graphApi } from "../../../shared/api/client";
-import { BOGOTA_CENTER } from "../../../shared/config";
-import { Loading } from "../../../shared/ui";
 import { Accessibility } from "lucide-react";
-
-const panelStyle: React.CSSProperties = {
-  position: "absolute", top: 16, right: 16, zIndex: 1000, width: 340, maxHeight: "85vh",
-  overflowY: "auto", padding: 20, borderRadius: 16,
-  background: "linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))",
-  backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-};
-
-const headerStyle: React.CSSProperties = {
-  position: "absolute", top: 16, left: 16, zIndex: 1000, padding: "12px 20px", borderRadius: 14,
-  background: "linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))",
-  backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)",
-  display: "flex", alignItems: "center", gap: 10,
-};
-
-const legendStyle: React.CSSProperties = {
-  position: "absolute", bottom: 24, left: 16, zIndex: 1000, padding: "10px 16px", borderRadius: 12,
-  background: "rgba(15,23,42,0.95)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)",
-  display: "flex", gap: 16, fontSize: 12,
-};
-
-const dot = (color: string): React.CSSProperties => ({ width: 10, height: 10, borderRadius: "50%", background: color, display: "inline-block", marginRight: 6 });
+import { MAP_CONFIG } from "../../../shared/config";
+import { Loading, Panel } from "../../../shared/ui";
+import { useModal } from "../../../shared/hooks/useModal";
+import { useAccessibility, useCentrality } from "../hooks/useAccessibility";
+import { NodeDetailModal } from "../../map/widgets/NodeDetailModal";
+import type { GraphNode } from "../../../shared/types";
+import "leaflet/dist/leaflet.css";
 
 export default function AccessibilityPage() {
   const [tab, setTab] = useState<"worst" | "best">("worst");
-
-  const { data: worst, isLoading: l1 } = useQuery({ queryKey: ["acc-worst"], queryFn: () => graphApi.getWorstAccessibility(30) });
-  const { data: best, isLoading: l2 } = useQuery({ queryKey: ["acc-best"], queryFn: () => graphApi.getTop("betweenness", 15) });
+  const { data: worst, isLoading: l1 } = useAccessibility(30);
+  const { data: best, isLoading: l2 } = useCentrality(15);
+  const modal = useModal<GraphNode>();
 
   return (
-    <div style={{ height: "100vh", position: "relative" }}>
-      <div style={headerStyle}>
-        <Accessibility size={18} color="#c084fc" />
-        <span style={{ fontSize: 14, fontWeight: 700 }}>Accesibilidad del transporte</span>
-      </div>
+    <div className="h-screen relative">
+      <Panel className="absolute top-4 left-4 z-[1000] px-5 py-3 flex items-center gap-2.5">
+        <Accessibility size={18} className="text-purple-400" />
+        <span className="text-sm font-bold">Accesibilidad del transporte</span>
+      </Panel>
 
-      <div style={legendStyle}>
-        <span><span style={dot("#a855f7")} />Peor conectados</span>
-        <span><span style={dot("#10b981")} />Más centrales</span>
-      </div>
+      <Panel className="absolute bottom-6 left-4 z-[1000] px-4 py-2.5 flex gap-5 text-xs">
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" /> Peor conectados</span>
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Más centrales</span>
+      </Panel>
 
       {(worst || best) && (
-        <div style={panelStyle}>
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            {(["worst", "best"] as const).map((t) => (
-              <button key={t} onClick={() => setTab(t)} style={{
-                flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer",
-                background: tab === t ? (t === "worst" ? "rgba(168,85,247,0.2)" : "rgba(16,185,129,0.2)") : "rgba(30,41,59,0.5)",
-                color: tab === t ? (t === "worst" ? "#c084fc" : "#34d399") : "#64748b",
-              }}>
-                {t === "worst" ? "🟣 Peor conectados" : "🟢 Más centrales"}
-              </button>
-            ))}
+        <Panel className="absolute top-4 right-4 z-[1000] p-5 w-[340px] max-h-[85vh] overflow-y-auto">
+          <div className="flex gap-2 mb-4">
+            <button type="button" onClick={() => setTab("worst")} className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${tab === "worst" ? "bg-purple-500/20 text-purple-400 shadow-lg" : "bg-slate-800/50 text-slate-500"}`}>🟣 Peor conectados</button>
+            <button type="button" onClick={() => setTab("best")} className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${tab === "best" ? "bg-emerald-500/20 text-emerald-400 shadow-lg" : "bg-slate-800/50 text-slate-500"}`}>🟢 Más centrales</button>
           </div>
-
-          {tab === "worst" && worst?.map((n: any, i: number) => (
-            <div key={i} style={{ padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-              <p style={{ fontSize: 13, fontWeight: 600 }}>{n.name}</p>
-              <p style={{ fontSize: 11, color: "#64748b" }}>Closeness: {Number(n.properties?.closeness || 0).toFixed(4)}</p>
-            </div>
+          {(tab === "worst" ? worst : best)?.map((n) => (
+            <button type="button" key={n.id} onClick={() => modal.show(n)}
+              className="w-full py-2 border-b border-white/[0.04] last:border-0 cursor-pointer hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition text-left bg-transparent border-none">
+              <p className="text-[13px] font-semibold">{n.name}</p>
+              <p className="text-[11px] text-slate-500">{tab === "worst" ? `Closeness: ${Number(n.properties.closeness ?? 0).toFixed(4)}` : `Betweenness: ${Number(n.properties.betweenness ?? 0).toFixed(4)}`}</p>
+            </button>
           ))}
-
-          {tab === "best" && best?.map((n: any, i: number) => (
-            <div key={i} style={{ padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-              <p style={{ fontSize: 13, fontWeight: 600 }}>{n.name}</p>
-              <p style={{ fontSize: 11, color: "#64748b" }}>Betweenness: {Number(n.properties?.betweenness || 0).toFixed(4)}</p>
-            </div>
-          ))}
-        </div>
+        </Panel>
       )}
 
-      {(l1 || l2) && <div style={{ position: "absolute", inset: 0, zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center" }}><Loading /></div>}
+      <NodeDetailModal open={modal.open} node={modal.data} onClose={modal.hide} />
+      {(l1 || l2) && <div className="absolute inset-0 z-[999] flex items-center justify-center bg-slate-950/50"><Loading /></div>}
 
-      <MapContainer center={BOGOTA_CENTER} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false}>
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="GrafoMov" />
-
-        {worst?.map((n: any, i: number) => (
-          <CircleMarker key={`w-${i}`} center={[n.coordinates.lat, n.coordinates.lon]}
-            radius={8} color="#a855f7" fillColor="#a855f7" fillOpacity={0.45} weight={2}>
-            <Popup><b>{n.name}</b><br/>Closeness: {Number(n.properties?.closeness || 0).toFixed(4)}<br/>⚠️ Zona mal conectada</Popup>
+      <MapContainer center={MAP_CONFIG.center} zoom={12} className="h-full w-full" zoomControl={false}>
+        <TileLayer url={MAP_CONFIG.tileUrl} attribution={MAP_CONFIG.attribution} />
+        {worst?.map((n) => (
+          <CircleMarker key={`w-${n.id}`} center={[n.coordinates.lat, n.coordinates.lon]} radius={8} color="#a855f7" fillColor="#a855f7" fillOpacity={0.4} weight={2}>
+            <Popup><b>{n.name}</b><br/>Closeness: {Number(n.properties.closeness ?? 0).toFixed(4)}</Popup>
           </CircleMarker>
         ))}
-
-        {best?.map((n: any, i: number) => (
-          <CircleMarker key={`b-${i}`} center={[n.coordinates.lat, n.coordinates.lon]}
-            radius={12} color="#10b981" fillColor="#10b981" fillOpacity={0.45} weight={2}>
-            <Popup><b>{n.name}</b><br/>Betweenness: {Number(n.properties?.betweenness || 0).toFixed(4)}<br/>✅ Nodo central</Popup>
+        {best?.map((n) => (
+          <CircleMarker key={`b-${n.id}`} center={[n.coordinates.lat, n.coordinates.lon]} radius={12} color="#10b981" fillColor="#10b981" fillOpacity={0.4} weight={2}>
+            <Popup><b>{n.name}</b><br/>Betweenness: {Number(n.properties.betweenness ?? 0).toFixed(4)}</Popup>
           </CircleMarker>
         ))}
       </MapContainer>

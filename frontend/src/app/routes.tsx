@@ -10,20 +10,18 @@ const MetricsPage = lazy(() => import("../modules/metrics/pages/MetricsPage"));
 const SiniestralidadPage = lazy(() => import("../modules/siniestralidad/pages/SiniestralidadPage"));
 const AccessibilityPage = lazy(() => import("../modules/accessibility/pages/AccessibilityPage"));
 
-function Lazy({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<Loading />}>{children}</Suspense>;
-}
+const L = ({ children }: { children: React.ReactNode }) => <Suspense fallback={<Loading />}>{children}</Suspense>;
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.MAP} replace />} />
-        <Route path={ROUTES.MAP} element={<Lazy><MapPage /></Lazy>} />
-        <Route path={ROUTES.CHAT} element={<Lazy><ChatPage /></Lazy>} />
-        <Route path={ROUTES.METRICS} element={<Lazy><MetricsPage /></Lazy>} />
-        <Route path={ROUTES.SINIESTRALIDAD} element={<Lazy><SiniestralidadPage /></Lazy>} />
-        <Route path={ROUTES.ACCESSIBILITY} element={<Lazy><AccessibilityPage /></Lazy>} />
+        <Route path={ROUTES.MAP} element={<L><MapPage /></L>} />
+        <Route path={ROUTES.CHAT} element={<L><ChatPage /></L>} />
+        <Route path={ROUTES.METRICS} element={<L><MetricsPage /></L>} />
+        <Route path={ROUTES.SINIESTRALIDAD} element={<L><SiniestralidadPage /></L>} />
+        <Route path={ROUTES.ACCESSIBILITY} element={<L><AccessibilityPage /></L>} />
       </Route>
     </Routes>
   );

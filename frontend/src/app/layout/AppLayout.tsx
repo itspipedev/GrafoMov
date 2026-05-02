@@ -3,11 +3,9 @@ import { Sidebar } from "./components/Sidebar";
 
 export function AppLayout() {
   return (
-    <div style={{ minHeight: "100vh", background: "#0f172a", color: "#e2e8f0" }}>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
       <Sidebar />
-      <main style={{ marginLeft: 72 }}>
-        <Outlet />
-      </main>
+      <main className="ml-[72px]"><Outlet /></main>
     </div>
   );
 }

@@ -1,122 +1,42 @@
-import { useState, useRef, useEffect } from "react";
-import { Send, RotateCcw, Bot, User } from "lucide-react";
-import { agentApi } from "../../../shared/api/client";
-
-interface Message { role: "user" | "assistant"; content: string; }
+import { useState } from "react";
+import { Send, RotateCcw, Bot } from "lucide-react";
+import { useChat } from "../hooks/useChat";
+import { ChatBubble } from "../ui/ChatBubble";
+import { TypingIndicator } from "../ui/TypingIndicator";
+import { Suggestions } from "../ui/Suggestions";
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, loading, send, reset, bottomRef } = useChat();
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
-
-  const send = async () => {
-    if (!input.trim() || loading) return;
-    const msg = input.trim();
-    setInput("");
-    setMessages((p) => [...p, { role: "user", content: msg }]);
-    setLoading(true);
-    try {
-      const res = await agentApi.chat(msg);
-      setMessages((p) => [...p, { role: "assistant", content: res.response }]);
-    } catch {
-      setMessages((p) => [...p, { role: "assistant", content: "⚠️ Backend no disponible. Ejecuta: cd backend && uvicorn main:app --reload" }]);
-    }
-    setLoading(false);
-  };
+  const handleSend = () => { send(input); setInput(""); };
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Bot size={18} color="#34d399" />
-          </div>
+    <div className="h-screen flex flex-col">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-emerald-500/15 flex items-center justify-center"><Bot size={18} className="text-emerald-400" /></div>
           <div>
-            <p style={{ fontWeight: 700, fontSize: 15 }}>GrafoMov IA</p>
-            <p style={{ fontSize: 11, color: "#64748b" }}>Pregúntale sobre la movilidad de Bogotá</p>
+            <p className="font-bold text-[15px]">GrafoMov IA</p>
+            <p className="text-[11px] text-slate-500">Pregúntale sobre la movilidad de Bogotá</p>
           </div>
         </div>
-        <button onClick={() => { agentApi.reset().catch(() => {}); setMessages([]); }}
-          style={{ padding: 8, borderRadius: 8, background: "transparent", border: "none", color: "#64748b", cursor: "pointer" }}>
-          <RotateCcw size={16} />
-        </button>
+        <button type="button" onClick={reset} className="p-2 rounded-lg hover:bg-slate-800 text-slate-500 transition"><RotateCcw size={16} /></button>
       </div>
 
-      {/* Messages */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "24px 24px" }}>
-        {messages.length === 0 && (
-          <div style={{ textAlign: "center", color: "#475569", marginTop: 80 }}>
-            <Bot size={40} color="#334155" style={{ margin: "0 auto 16px" }} />
-            <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>¿Qué quieres saber?</p>
-            <p style={{ fontSize: 13, color: "#475569", marginBottom: 24 }}>Pregunta sobre estaciones, rutas, zonas peligrosas o accesibilidad</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-              {["¿Zonas más peligrosas?", "¿Paraderos cerca del centro?", "¿Nodo más central?"].map((q) => (
-                <button key={q} onClick={() => setInput(q)} style={{
-                  fontSize: 12, padding: "8px 16px", borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,0.1)", background: "rgba(30,41,59,0.8)",
-                  color: "#94a3b8", cursor: "pointer", transition: "all 0.2s",
-                }}>{q}</button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {messages.map((msg, i) => (
-          <div key={i} style={{ display: "flex", gap: 10, marginBottom: 16, justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
-            {msg.role === "assistant" && (
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Bot size={14} color="#34d399" />
-              </div>
-            )}
-            <div style={{
-              maxWidth: "65%", borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-              padding: "12px 16px", fontSize: 14, lineHeight: 1.5, whiteSpace: "pre-wrap",
-              background: msg.role === "user" ? "linear-gradient(135deg, #10b981, #059669)" : "linear-gradient(135deg, #1e293b, #334155)",
-              border: msg.role === "assistant" ? "1px solid rgba(255,255,255,0.06)" : "none",
-              color: msg.role === "user" ? "white" : "#cbd5e1",
-            }}>{msg.content}</div>
-            {msg.role === "user" && (
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#334155", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <User size={14} color="#94a3b8" />
-              </div>
-            )}
-          </div>
-        ))}
-
-        {loading && (
-          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Bot size={14} color="#34d399" className="animate-pulse" />
-            </div>
-            <div style={{ background: "#1e293b", borderRadius: 18, padding: "12px 16px", display: "flex", gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#475569", animation: "bounce 1s infinite" }} />
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#475569", animation: "bounce 1s infinite 0.1s" }} />
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#475569", animation: "bounce 1s infinite 0.2s" }} />
-            </div>
-          </div>
-        )}
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        {!messages.length && <Suggestions onSelect={(q) => send(q)} />}
+        {messages.map((m, i) => <ChatBubble key={`${m.role}-${i}-${m.content.slice(0, 20)}`} msg={m} />)}
+        {loading && <TypingIndicator />}
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div style={{ padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <form onSubmit={(e) => { e.preventDefault(); send(); }} style={{ display: "flex", gap: 8 }}>
-          <input value={input} onChange={(e) => setInput(e.target.value)}
-            placeholder="Escribe tu pregunta..."
-            style={{
-              flex: 1, background: "#1e293b", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 14, padding: "12px 16px", fontSize: 14, color: "#e2e8f0",
-              outline: "none",
-            }} />
-          <button type="submit" disabled={loading} style={{
-            background: "linear-gradient(135deg, #10b981, #059669)",
-            border: "none", borderRadius: 14, padding: "12px 16px", cursor: "pointer",
-            opacity: loading ? 0.5 : 1, color: "white",
-          }}>
+      <div className="px-6 py-4 border-t border-white/[0.04]">
+        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
+          <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escribe tu pregunta..."
+            className="flex-1 bg-slate-900 border border-white/[0.06] rounded-xl px-4 py-3 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition" />
+          <button type="submit" disabled={loading}
+            className="bg-gradient-to-br from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 disabled:opacity-40 rounded-xl px-4 py-3 text-white transition">
             <Send size={18} />
           </button>
         </form>
