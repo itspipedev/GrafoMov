@@ -137,6 +137,44 @@ https://www.datos.gov.co/d/{ID}                # Vista web
 
 ---
 
+## 🌐 Visión: Grafo de Movilidad Completa
+
+GrafoMov no es solo transporte público — es **toda la movilidad urbana** de Bogotá en un grafo.
+
+### Capas del grafo
+
+| Capa | Descripción | Estado |
+|------|-------------|--------|
+| 🚌 **Transporte masivo (TM)** | Estaciones, rutas troncales, trazados | ✅ Datos descargados |
+| 🚏 **Transporte zonal (SITP)** | Paraderos, rutas zonales, nodos | ✅ Datos descargados |
+| 🚗 **Vehículos particulares** | Flujos vehiculares, aforos, velocidades | ⏳ Pendiente buscar fuentes |
+| 🚨 **Siniestralidad** | Accidentes geolocalizados, sectores críticos | ⚠️ Parcial (falta geolocalización) |
+| 📈 **Demanda** | Pasajeros por estación/ruta, series temporales | ⚠️ Parcial (datos 2020 pandemia) |
+| 🛣️ **Red vial** | Malla vial completa, intersecciones | ⏳ Pendiente complementar |
+
+### Fuentes de datos
+
+> **Regla del concurso (Nivel Avanzado):** *"Las soluciones podrán involucrar integración de grandes volúmenes de datos (Big Data), combinando datos abiertos con fuentes en tiempo real, así como datos estructurados y no estructurados."*
+
+| Fuente | Tipo | Estado | Datos |
+|--------|------|--------|-------|
+| **datos.gov.co** | Obligatoria (principal) | ✅ Descargado | TM, SITP, siniestralidad, demanda, red vial |
+| **GIS Transmilenio** | Complementaria | ✅ Descargado | Estaciones, rutas, trazados, paraderos |
+| **ArcGIS Hub SDM** | Complementaria | ✅ Descargado | Paraderos SITP, nodos transporte |
+| **datosabiertos.bogota.gov.co** | Complementaria | ❌ Requiere login | Anuarios siniestralidad 2017-2024 (xlsx) |
+| **SIMUR / SDM** | Complementaria | ⏳ Por explorar | Aforos vehiculares, velocidades |
+| **IDECA** | Complementaria | ⏳ Por explorar | Datos geoespaciales Bogotá |
+| **OpenStreetMap** | Complementaria | ⏳ Por explorar | Red vial completa |
+| **GTFS Transmilenio** | Complementaria | ⏳ Por explorar | Horarios, frecuencias, tiempo real |
+
+### Prioridades de datos
+
+1. ✅ **YA TENEMOS:** Estructura del grafo (nodos + aristas de TM y SITP)
+2. ⚠️ **MEJORAR:** Siniestralidad con geolocalización, demanda actualizada
+3. ⏳ **BUSCAR:** Flujos vehiculares, red vial completa, datos en tiempo real
+
+---
+
 ## 🏗️ Arquitectura
 
 **Opción C — Híbrido (Backend API + Frontend Streamlit)**
@@ -174,15 +212,19 @@ GrafoMov/
 
 ## ✅ TODO
 
-- [ ] Inscribirse antes del 1 de mayo 2026 (Microsoft Forms en la página del concurso)
-- [ ] Descargar y explorar datasets clave (prioridad ⭐⭐⭐)
-- [ ] Construir grafo base con paradas + rutas de Bogotá
-- [ ] Enriquecer nodos/aristas con features (pasajeros, siniestralidad)
-- [ ] Entrenar modelo GNN para predicción de demanda
-- [ ] Implementar detección de anomalías
-- [ ] Análisis de accesibilidad (zonas mal conectadas)
-- [ ] Agente conversacional con Graph RAG
-- [ ] Dashboard / web app funcional
-- [ ] Documentación CRISP-ML
-- [ ] Crear repo público GitHub/GitLab
+- [x] Inscribirse antes del 1 de mayo 2026
+- [x] Descargar y explorar datasets clave
+- [x] Construir grafo base con paradas + rutas de Bogotá (7,444 nodos, 41,990 aristas)
+- [x] Enriquecer nodos/aristas con features (siniestralidad, centralidad, demanda)
+- [x] Entrenar modelo GNN (GAT — MSE 0.18, RMSE 0.42)
+- [x] Backend FastAPI (SOLID, 8 endpoints + agente)
+- [x] PostGIS (Docker, schema, loader, repositorio)
+- [x] Agente conversacional (LLM + Graph RAG, 6 tools, OpenAI/Ollama)
+- [x] Frontend Streamlit tipo Waze (8 vistas: mapa, nearby, rutas, peligro, accesibilidad, centralidad, métricas, chat)
+- [x] Documentación CRISP-ML
+- [x] Repo público GitHub
 - [ ] Registrar en herramientas.datos.gov.co/usos
+- [ ] Buscar datos complementarios (Waze, OSM, SIMUR) para movilidad vehicular completa
+- [ ] Mejorar siniestralidad con datos geolocalizados (si se obtiene acceso a datosabiertos.bogota.gov.co)
+- [ ] Mejorar demanda con datos post-pandemia
+- [ ] Implementar pgRouting para pathfinding en PostGIS

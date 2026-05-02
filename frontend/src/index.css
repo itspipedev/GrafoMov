@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.leaflet-container { background: #0f172a !important; }
+.leaflet-popup-content-wrapper { background: #1e293b !important; color: #e2e8f0 !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.06) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important; }
+.leaflet-popup-tip { background: #1e293b !important; }
+.leaflet-popup-close-button { color: #94a3b8 !important; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
